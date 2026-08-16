@@ -13,7 +13,7 @@ We have meticulously implemented **every required feature**, spanning from stand
 - **Bitwise Operators**: `&`, `|`, `^`, `~`, `<<`, `>>`
 - **Control Flow**: `if`, `else`, `for`, `while`, `do`, `switch`, `case`, `default`, `break`, `continue`, `goto`, `return`
 - **Data Types & Storage**: `int`, `char`, `float`, `double`, `void`, `short`, `long`, `signed`, `unsigned`, `static`
-- **Literals**: Integer, floating-point, character (`'\n'`, `'\x41'`), string literals, and booleans (`true`, `false`)
+- **Literals**: Integer, floating-point, character (`'\n'`, `'\x41'`), string literals, binary (`0b1010`), and booleans (`true`, `false`)
 - **Comments**: Correctly filters single-line (`//`) and multi-line block comments (`/* ... */`)
 
 ### 2. Advanced C Features
@@ -22,7 +22,6 @@ We have meticulously implemented **every required feature**, spanning from stand
 - **Variable Arguments**: Ellipsis (`...`) for variadic functions
 - **Structs & Typedefs**: `struct`, `typedef`, `enum`, `union`
 - **File Manipulation**: `FILE`, `fopen`, `fclose`, `fread`, `fwrite`, `fprintf`, `fscanf`, `fgets`, `fputs`, `feof`
-- **Command Line Inputs**: Recognizes standard identifiers like `argc` and `argv`
 
 ### 3. Object-Oriented & Custom Features
 - **Classes & Objects**: `class`, `public`, `private`, `protected`, `this`

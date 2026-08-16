@@ -1,0 +1,7 @@
+Lexical analysis failed: 6 error(s) found.
+Line 5: Multi-character char literal near ''XYZ''
+Line 8: Unterminated string literal near '"This string has no closing quote'
+Line 11: Invalid escape sequence near '\q'
+Line 11: Invalid escape sequence near '\z'
+Line 14: Illegal character near '$'
+Line 15: Illegal character near '@'

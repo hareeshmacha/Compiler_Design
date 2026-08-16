@@ -9,6 +9,7 @@ lex.yy.c
 
 # Build directories
 obj/
+phase1-lexer/test/output/
 
 # OS and Editor files
 .DS_Store
