@@ -1,0 +1,15 @@
+# Build objects and executables
+*.o
+*.exe
+lexer
+
+# Flex auto-generated files
+lex.yy.cpp
+lex.yy.c
+
+# Build directories
+obj/
+
+# OS and Editor files
+.DS_Store
+.vscode/
