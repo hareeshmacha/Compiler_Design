@@ -1,29 +1,29 @@
 #!/bin/bash
 
-# Build the lexer
-echo "Building the lexer..."
-make clean > /dev/null 2>&1
-make > /dev/null 2>&1
-
-if [ $? -ne 0 ]; then
-    echo "Build failed!"
+if [ -z "$1" ]; then
+    echo "Usage: ./run.sh <executable_path>"
     exit 1
 fi
 
-echo "Build successful. Running tests..."
+EXEC="$1"
+
+if [ ! -f "$EXEC" ]; then
+    echo "Executable $EXEC not found!"
+    exit 1
+fi
+
+echo "Running tests using $EXEC..."
 echo "=========================================="
 
 passed=0
 failed=0
-
-mkdir -p test/output
 
 for file in test/*.c; do
     filename=$(basename "$file" .c)
     expected_file="test/expected/${filename}.out"
     actual_file="test/output/${filename}.out"
     
-    ./syntax_analyzer "$file" > "$actual_file" 2>&1
+    "$EXEC" "$file" > "$actual_file" 2>&1
     
     if diff -q "$expected_file" "$actual_file" > /dev/null; then
         echo -e "[\033[32mPASS\033[0m] $filename"
@@ -41,7 +41,8 @@ echo "=========================================="
 echo "Tests Passed: $passed"
 echo "Tests Failed: $failed"
 
-if [ $failed -ne 0 ]; then
+if [ $failed -eq 0 ]; then
+    exit 0
+else
     exit 1
 fi
-exit 0

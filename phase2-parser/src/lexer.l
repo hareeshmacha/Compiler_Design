@@ -112,6 +112,7 @@ FRAC        ({DIGIT}+\.{DIGIT}*|\.{DIGIT}+)
 "delete"     { yylval.token_ptr = makeToken(yytext, "DELETE"); return DELETE; }
 "sizeof"     { yylval.token_ptr = makeToken(yytext, "SIZEOF"); return SIZEOF; }
 
+"true"|"false"                   { yylval.token_ptr = makeToken(yytext, "BOOL_LITERAL"); return BOOL_LITERAL; }
 {ID}         { 
                  yylval.token_ptr = makeToken(yytext, "identifier"); 
                  SymbolEntry sym;
@@ -159,7 +160,6 @@ FRAC        ({DIGIT}+\.{DIGIT}*|\.{DIGIT}+)
 {FRAC}([eE][+-]?{DIGIT}+)?[fF]?  { yylval.token_ptr = makeToken(yytext, "FLOAT_LITERAL"); return FLOAT_LITERAL; }
 {DIGIT}+[eE][+-]?{DIGIT}+[fF]?   { yylval.token_ptr = makeToken(yytext, "FLOAT_LITERAL"); return FLOAT_LITERAL; }
 {DIGIT}+{INT_SUFFIX}?            { yylval.token_ptr = makeToken(yytext, "INT_LITERAL"); return INT_LITERAL; }
-"true"|"false"                   { yylval.token_ptr = makeToken(yytext, "BOOL_LITERAL"); return BOOL_LITERAL; }
 
 "..." { yylval.token_ptr = makeToken(yytext, "ELLIPSIS"); return ELLIPSIS; }
 "::"  { yylval.token_ptr = makeToken(yytext, "SCOPE_RES"); return SCOPE_RES; }
