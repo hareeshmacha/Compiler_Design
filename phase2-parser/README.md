@@ -1,56 +1,53 @@
-# Phase 1: Lexical Analyzer
+# Phase 2: Syntax Analyzer (Parser)
 
-This directory contains the Lexical Analyzer (Scanner) for our custom C-like programming language. It represents the very first phase of the compiler pipeline. Built in C++ using `flex`, this lexer categorizes raw source code into a structured stream of tokens.
+This directory contains the Syntax Analyzer (Parser) for our custom C-like programming language. It represents the second phase of the compiler pipeline. Built in C++ using `flex` and `bison`, this parser verifies the grammatical structure of the source code and maps variables/functions to their semantic roles.
 
 ---
 
 ## Features Implemented
 
-We have meticulously implemented **every required feature**, spanning from standard C constructs to advanced object-oriented features:
+We have meticulously implemented grammar rules spanning from standard C constructs to advanced object-oriented features:
 
 ### 1. Basic Constructs
-- **Arithmetic & Logical Operators**: `+`, `-`, `*`, `/`, `%`, `++`, `--`, `==`, `!=`, `<`, `>`, `<=`, `>=`, `&&`, `||`, `!`
-- **Bitwise Operators**: `&`, `|`, `^`, `~`, `<<`, `>>`
-- **Control Flow**: `if`, `else`, `for`, `while`, `do`, `switch`, `case`, `default`, `break`, `continue`, `goto`, `return`
-- **Data Types & Storage**: `int`, `char`, `float`, `double`, `void`, `short`, `long`, `signed`, `unsigned`, `static`
-- **Literals**: Integer, floating-point, character (`'\n'`, `'\x41'`), string literals, binary (`0b1010`), and booleans (`true`, `false`)
-- **Comments**: Correctly filters single-line (`//`) and multi-line block comments (`/* ... */`)
+- **Arithmetic & Logical Operators**: Full expression trees with correct operator precedence (e.g., `+`, `-`, `*`, `&&`, `==`).
+- **Control Flow**: `if`, `else`, `for`, `while`, `do`, `switch`, `case`, `default`, `break`, `continue`, `return`.
+- **Custom Control Flow**: The `until` loop, acting as an inverse `while` loop.
+- **Literals & Assignment**: Integer, floating-point, boolean literals, and complex assignment operations (`+=`, `<<=`).
 
 ### 2. Advanced C Features
-- **Pointers & References**: Single pointers (`*`), multi-level pointers (`**`, `***`), and references (`&`)
-- **Memory Management**: `malloc`, `free`, `calloc`, `realloc`
-- **Variable Arguments**: Ellipsis (`...`) for variadic functions
-- **Structs & Typedefs**: `struct`, `typedef`, `enum`, `union`
-- **File Manipulation**: `FILE`, `fopen`, `fclose`, `fread`, `fwrite`, `fprintf`, `fscanf`, `fgets`, `fputs`, `feof`
+- **Pointers & Memory**: Pointer declarations (`int* ptr`), memory allocation (`malloc`, `free`), and `sizeof()`.
+- **Structs & Type Casts**: Struct definitions, instantiations, and explicit type casts `(int)`.
+- **File Manipulation**: `FILE*`, `fopen`, `fclose`, `fprintf`, `fscanf`, etc.
 
-### 3. Object-Oriented & Custom Features
-- **Classes & Objects**: `class`, `public`, `private`, `protected`, `this`
-- **Scope Resolution**: `::`
-- **Modern C++ Elements**: Lambdas (via `[`, `]`, `(`, `)`, `->`) and `auto`
-- **Custom Control Flow**: `until` loops (acting as inverse `while` loops)
+### 3. Object-Oriented Features
+- **Classes & Inheritance**: `class`, `public`, `private`, `protected`.
+- **Scope & Members**: Scope resolution `::` and member access `.` / `->`.
+- **Lambdas**: Parsing inline functions `[](int x) { ... }`.
 
 ---
 
 ## Elegant Architecture & Simplicity
 
-This lexer is engineered to be as simple, clean, and modern as possible. Instead of messy and complicated `if/else` logic chains, our lexer utilizes a highly optimized **Component-Based Architecture**:
+This parser is engineered to be as simple, clean, and modern as possible. Instead of building massive, confusing Abstract Syntax Trees (ASTs), our parser utilizes a highly optimized **Symbol Table Architecture**:
 
-- **O(1) Keyword Resolution**: Inside `token_mapper.cpp`, we use modern C++ `std::unordered_map` hash tables to look up keywords instantly. This keeps the code incredibly clean and highly readable.
-- **Robust Error Handling**: Our lexer never crashes on invalid inputs. `error_handler.cpp` neatly intercepts all lexical errors (like unterminated strings or invalid escapes) into a safe `std::vector` and cleanly reports them with precise line numbers at the end of execution.
+- **Intelligent Token Tracking**: The `ParsedToken` class tracks lexical data directly from Flex.
+- **Object-Oriented Symbol Table**: Instead of global arrays, we implemented a robust `SymbolTable` class with scope management (`enterScope`, `exitScope`). When Bison parses a declaration (like `int myVar;`), it adds it to the current scope. When it sees an identifier, it queries the `SymbolTable` to resolve its semantic role!
+- **Lexer Hack**: The Lexer talks to the Symbol Table to distinguish between normal identifiers and user-defined classes/structs (returning `TYPE_NAME`), ensuring the grammar remains ambiguity-free.
 
 ---
 
 ## Directory Structure
 
-The project is structured into logical components to ensure clean separation of concerns and maintainability:
+The project is structured into logical components to ensure clean separation of concerns:
 
 ```text
-phase1-lexer/
+phase2-parser/
 ├── src/
 │   ├── lexer.l             # The core Flex regular expressions
-│   ├── token_mapper.hpp    # Definitions of Token struct, TokenType enum
-│   ├── token_mapper.cpp    # O(1) keyword and operator mapping implementation
-│   ├── error_handler.hpp   # Definitions for non-crashing error tracking
+│   ├── parser.y            # The Bison grammar rules
+│   ├── semantic_types.hpp  # Definitions of ParsedToken and semantic logic
+│   ├── symbol_table.hpp    # Definitions for Scope Management
+│   ├── symbol_table.cpp    # Symbol Table implementation
 │   ├── error_handler.cpp   # Error logging implementation
 │   └── main.cpp            # Driver code to parse files and print the table
 ├── test/
@@ -64,7 +61,7 @@ phase1-lexer/
 │   ├── test08_classes_oop.c     # OOP features (class, public, this)
 │   ├── test09_lambdas_varargs.c # Lambdas and Ellipsis (...)
 │   ├── test10_file_io.c         # fopen, fclose, FILE
-│   └── test11_lexical_errors.c  # Edge cases (unterminated strings, invalid literals)
+│   └── test11_lexical_errors.c  # Edge cases that trigger syntax errors
 ├── makefile                # Compilation instructions
 └── run.sh                  # Automation script to compile and run all tests
 ```
@@ -73,18 +70,15 @@ phase1-lexer/
 
 ## Rigorous Testing
 
-This lexer is built to be robust and fault-tolerant. 
-
-- **Granular Testing**: We designed 11 specific edge-case test files (located in `/test/`) to rigorously test every single feature, including complex pointer chains, object-oriented constructs, file I/O operations, and lambda syntax.
-- **Error Recovery**: The lexer is tested against intentionally malformed code (such as unterminated string literals, invalid escape sequences, and unterminated block comments) to ensure it correctly intercepts and reports errors without crashing.
+We designed 11 specific edge-case test files (located in `/test/`) to rigorously test every single feature, including complex pointer chains, object-oriented constructs, and lambda syntax. The `run.sh` script automatically diffs the output against the expected baselines in `test/expected/`.
 
 ---
 
 ## Build & Run Instructions
 
-**Prerequisites**: You must have `g++`, `flex`, and `make` installed on a Linux/Unix system (or WSL/MSYS2 on Windows).
+**Prerequisites**: You must have `g++`, `flex`, `bison`, and `make` installed on a Linux/Unix system (or WSL/MSYS2 on Windows).
 
-1. **Build the Lexer**
+1. **Build the Parser**
    Navigate to this directory and compile:
    ```bash
    make
@@ -93,35 +87,37 @@ This lexer is built to be robust and fault-tolerant.
 2. **Run the Automated Tests**
    Execute all 11 test cases at once:
    ```bash
-   bash run.sh
+   bash run.sh ./syntax_analyzer
    ```
 
 3. **Run a Single File**
-   If you want to lex a specific source file manually:
+   If you want to parse a specific source file manually:
    ```bash
-   ./lexer test/test01_arithmetic.c
+   ./syntax_analyzer test/test01_arithmetic.c
    ```
 
 ---
 
 ## Expected Output
 
-If the source code is completely valid, the lexer will generate a cleanly formatted table mapping each Lexeme to its Token type:
+If the source code is completely valid, the parser will generate a cleanly formatted table mapping each Token to its resolved semantic Token_Type:
 
 ```text
-Lexeme                         Token               
-------                         -----               
-if                             if                  
-(                              open_paren_op       
-a                              identifier          
-==                             eq_op               
-5                              int_literal         
-)                              close_paren_op      
+Token                    | Token_Type
+-------------------------|---------------
+int                      | INT
+main                     | PROCEDURE
+(                        | (
+)                        | )
+{                        | {
+int                      | INT
+a                        | VARIABLE
+=                        | =
+15                       | INT_LITERAL
 ```
 
-If lexical errors are found, the lexer suppresses the table and instead reports all issues:
+If the input code is structurally invalid or contains lexical errors, the parser prints the syntax errors to standard error and halts:
 ```text
-Lexical analysis failed: 2 error(s) found.
-Line 5: Unterminated string literal near '"Hello '
-Line 10: Illegal character near '@'
+Lexical error on line 5: Multi-character char literal near 'XYZ'
+Syntax error on line 5: syntax error near ';'
 ```
