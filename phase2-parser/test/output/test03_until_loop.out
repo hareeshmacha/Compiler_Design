@@ -1,0 +1,27 @@
+Token                    | Token_Type
+-------------------------|---------------
+int                      | INT
+main                     | PROCEDURE
+(                        | (
+)                        | )
+{                        | {
+int                      | INT
+count                    | VARIABLE
+=                        | =
+10                       | INT_LITERAL
+;                        | ;
+until                    | UNTIL
+(                        | (
+count                    | VARIABLE
+==                       | EQ_OP
+0                        | INT_LITERAL
+)                        | )
+{                        | {
+count                    | VARIABLE
+--                       | DEC
+;                        | ;
+}                        | }
+return                   | RETURN
+count                    | VARIABLE
+;                        | ;
+}                        | }
